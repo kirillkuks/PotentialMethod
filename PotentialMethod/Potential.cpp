@@ -16,8 +16,8 @@ Potential::Potential(PotentialParams const& pp)
 	table.print();
 }
 
-void Potential::northwest_coener_method() {
-	Matrix plan(production_points.size(), consumption_points.size());
+void Potential::northwest_corner_method() {
+	plan = Matrix::create_matrix(production_points.size(), consumption_points.size());
 	for (size_t i = 0, j = 0; i < production_points.size() && j < consumption_points.size();) {
 		int min = std::min(production_points[i], consumption_points[j]);
 
