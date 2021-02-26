@@ -37,7 +37,15 @@ int& Matrix::Vector::operator[](size_t index) {
 	return vector[index];
 }
 
+int const& Matrix::Vector::operator[](size_t index) const {
+	return vector[index];
+}
+
 Matrix::Vector Matrix::operator[](size_t index) {
+	return Vector(matrix[index]);
+}
+
+Matrix::Vector Matrix::operator[](size_t index) const {
 	return Vector(matrix[index]);
 }
 

@@ -13,6 +13,7 @@ public:
 
 	Matrix& operator=(Matrix);
 	Vector operator[](size_t);
+	Vector operator[](size_t) const;
 
 	size_t get_n() const;
 	size_t get_m() const;
@@ -25,6 +26,7 @@ private:
 	struct Vector {
 		Vector(int*);
 		int& operator[](size_t);
+		int const& operator[](size_t) const;
 	private:
 		int* vector;
 	};
