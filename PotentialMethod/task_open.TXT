@@ -1,0 +1,11 @@
+Size
+4 6
+Production
+11 15 10 10
+Consumption
+10 7 9 9 7 4
+Table
+8 5 7 5 4 0
+9 6 8 2 3 0
+7 4 7 1 4 0
+5 4 7 1 2 0

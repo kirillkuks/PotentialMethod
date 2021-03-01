@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include "Potential.h"
+#include "ClosedType.h"
 
 class Parser {
 public:

@@ -3,7 +3,8 @@
 Potential::Potential(PotentialParams const& pp)
 	: production_points{ pp.production_points },
 	consumption_points{ pp.consumption_points },
-	table{ pp.table } {
+	table{ pp.table },
+	fic{ pp.fic } {
 	std::cout << "production_points:\n";
 	for (auto elem : production_points) {
 		std::cout << elem << ' ';
@@ -14,6 +15,20 @@ Potential::Potential(PotentialParams const& pp)
 	}
 	std::cout << "\nTable:\n";
 	table.print();
+}
+
+int Potential::objective_function(std::vector<int> const& x) const {
+	size_t n_size = table.get_n();
+	size_t m_size = table.get_m();
+
+	int sum = 0;
+	for (size_t i = 0, k = 0; i < n_size; ++i) {
+		for (size_t j = 0; j < m_size; ++j) {
+			sum += table[i][j] * x[k++];
+		}
+	}
+
+	return sum;
 }
 
 void Potential::northwest_corner_method() {
@@ -98,7 +113,7 @@ bool Potential::is_optimal_plan(size_t& i_, size_t& j_) const {
 		else {
 			for (auto const& pair : potential_pairs) {
 				if (!defined_prod_points[pair.second] && pair.first == cur_var.second) {
-					defined_cons_points[pair.second] = true;
+					defined_prod_points[pair.second] = true;
 					u[pair.second] = v[pair.first] - table[pair.second][pair.first];
 					queue.push({ true, pair.second });
 				}
@@ -124,16 +139,146 @@ bool Potential::is_optimal_plan(std::vector<int> const& u, std::vector<int> cons
 	size_t prod_points = production_points.size();
 	size_t cons_points = consumption_points.size();
 
+	int delta = 0;
+
 	for (size_t i = 0; i < prod_points; ++i) {
 		for (size_t j = 0; j < cons_points; ++j) {
-			if (v[j] - u[i] > table[i][j]) {
+			if (v[j] - u[i] - table[i][j] > delta) {
 				i_ = i;
 				j_ = j;
-				return false;
+				delta = v[j] - u[i] - table[i][j];
 			}
 		}
 	}
+
+	if (delta) {
+		std::cout << "Delta: " << delta << std::endl;
+		return false;
+	}
+
 	return true;
+}
+
+bool Potential::is_consumption_in_cycle(std::vector<size_t> const& vertexes, size_t cons) const {
+	for (size_t j = 1; j < vertexes.size(); j += 2) {
+		if (vertexes[j] == cons) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Potential::is_production_in_cycle(std::vector<size_t> const& vertexes, size_t prod) const {
+	for (size_t i = 2; i < vertexes.size(); i += 2) {
+		if (vertexes[i] == prod) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void Potential::build_cycle(std::vector<size_t>& vertexes) {
+	size_t size = vertexes.size();
+
+	if (size % 2) {
+		for (size_t j = 0; j < plan.get_m(); ++j) {
+			if (vertexes[size - 1] == vertexes[0] && j == vertexes[1]) {
+				if (vertexes.size() > 3) {
+					cycle = vertexes;
+				}
+				std::cout << "Size: " << vertexes.size() << std::endl;
+			}
+			if (plan[vertexes[size - 1]][j] > -1 && !is_consumption_in_cycle(vertexes, j)) {
+				vertexes.push_back(j);
+				build_cycle(vertexes);
+				vertexes.pop_back();
+			}
+		}
+	}
+	else {
+		for (size_t i = 0; i < plan.get_n(); ++i) {
+			if (i == vertexes[0] && vertexes[size - 1] == vertexes[1]) {
+				if (vertexes.size() > 3) {
+					cycle = vertexes;
+				}
+			}
+			if (plan[i][vertexes[size - 1]] > -1 && !is_production_in_cycle(vertexes, i)) {
+				vertexes.push_back(i);
+				build_cycle(vertexes);
+				vertexes.pop_back();
+			}
+		}
+	}
+}
+
+void Potential::build_cycle(size_t i, size_t j) {
+	std::vector<size_t> vertexes(2);
+	vertexes[0] = i;
+	vertexes[1] = j;
+	cycle.clear();
+
+	build_cycle(vertexes);
+
+	std::cout << "Vertexes:\n";
+	for (auto vertex : cycle) {
+		std::cout << vertex << " ";
+	}
+
+	return;
+}
+
+void Potential::recount() {
+	size_t size = cycle.size();
+
+	std::vector<std::pair<size_t, size_t>> chain(size - 1);
+
+	for (size_t i = 0; i < size - 2; i += 2) {
+		chain[i] = { cycle[i], cycle[i + 1] };
+		chain[i + 1] = { cycle[i + 2], cycle[i + 1] };
+	}
+
+	std::cout << "\nCycle:\n";
+	for (auto& pair : chain) {
+		std::cout << "<" << pair.first << ", " << pair.second << ">; ";
+	}
+	std::cout << std::endl;
+
+	int min = plan[chain[1].first][chain[1].second];
+	for (size_t i = 3; i < size - 1; i += 2) {
+		if (min > plan[chain[i].first][chain[i].second]) {
+			min = plan[chain[i].first][chain[i].second];
+		}
+	}
+
+	plan[chain[0].first][chain[0].second] = 0;
+	for (size_t i = 0; i < size - 1; i += 2) {
+		plan[chain[i].first][chain[i].second] += min;
+	}
+	bool closed = false;
+	for (size_t i = 1; i < size - 1; i += 2) {
+		plan[chain[i].first][chain[i].second] -= min;
+		if (plan[chain[i].first][chain[i].second] == 0 && !closed) {
+			plan[chain[i].first][chain[i].second] = -1;
+			closed = true;
+		}
+	}
+
+	std::cout << "\nMin: " << min << std::endl;
+}
+
+std::vector<int> Potential::get_plan() {
+	size_t n_size = plan.get_n();
+	size_t m_size = plan.get_m();
+	std::vector<int> optimal(n_size * m_size);
+
+	size_t it = 0;
+	for (size_t i = 0; i < n_size; ++i) {
+		for(size_t j = 0; j < m_size; ++j) {
+			optimal[it++] = plan[i][j] > -1 ? plan[i][j] : 0;
+		}
+	}
+
+	return optimal;
 }
 
 std::vector<int> Potential::solve() {
@@ -143,10 +288,18 @@ std::vector<int> Potential::solve() {
 	size_t i, j;
 	while (!is_optimal_plan(i, j)) {
 		std::cout << "Next: " << i << " : " << j << std::endl;
-		break;
+
+		build_cycle(i, j);
+		recount();
+
+		std::cout << "New plan:\n";
+		plan.print();
 	}
 
-	return std::vector<int>(1);
+	std::cout << "Final plan:\n";
+	plan.print();
+
+	return get_plan();
 }
 
 Potential::~Potential() {}

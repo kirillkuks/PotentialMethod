@@ -139,12 +139,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ClosedType.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Potential.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ClosedType.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Potential.h" />

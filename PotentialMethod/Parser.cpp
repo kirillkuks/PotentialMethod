@@ -62,9 +62,9 @@ Potential* Parser::parse() {
 		}
 	}
 
-	PotentialParams pp{ production_points, consumption_points, table };
+	PotentialParams pp{ production_points, consumption_points, table, Fictitious::FIC_NAN };
 
-	return new Potential(pp);
+	return new Potential(ClosedType(pp).get_params());
 }
 
 std::vector<int> Parser::create_vector(size_t size) {
