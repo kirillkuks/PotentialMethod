@@ -29,7 +29,7 @@ void ClosedType::product_more(int div, Matrix const& table) {
 	size_t n_size = table.get_n();
 	size_t m_size = table.get_m();
 
-	params.table = Matrix(n_size + 1, m_size);
+	params.table = Matrix(n_size, m_size + 1);
 	for (size_t i = 0; i < n_size; ++i) {
 		for (size_t j = 0; j < m_size; ++j) {
 			params.table[i][j] = table[i][j];
@@ -44,7 +44,7 @@ void ClosedType::consum_more(int div, Matrix const& table) {
 	size_t n_size = table.get_n();
 	size_t m_size = table.get_m();
 
-	params.table = Matrix(n_size, m_size + 1);
+	params.table = Matrix(n_size + 1, m_size);
 	for (size_t i = 0; i < n_size; ++i) {
 		for (size_t j = 0; j < m_size; ++j) {
 			params.table[i][j] = table[i][j];

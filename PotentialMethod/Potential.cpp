@@ -17,9 +17,25 @@ Potential::Potential(PotentialParams const& pp)
 	table.print();
 }
 
+void Potential::take_away_fic(size_t& n_size, size_t& m_size) const {
+	std::cout << "\nFic: " << fic << std::endl;
+	switch (fic) {
+	case Fictitious::FIC_PRODUCTION:
+		--n_size;
+		return;
+	case Fictitious::FIC_CONSUMPTION:
+		--m_size;
+		return;
+	default:
+		return;
+	}
+}
+
 int Potential::objective_function(std::vector<int> const& x) const {
 	size_t n_size = table.get_n();
 	size_t m_size = table.get_m();
+
+	take_away_fic(n_size, m_size);
 
 	int sum = 0;
 	for (size_t i = 0, k = 0; i < n_size; ++i) {
@@ -266,9 +282,11 @@ void Potential::recount() {
 	std::cout << "\nMin: " << min << std::endl;
 }
 
-std::vector<int> Potential::get_plan() {
+std::vector<int> Potential::get_plan() const {
 	size_t n_size = plan.get_n();
 	size_t m_size = plan.get_m();
+
+	take_away_fic(n_size, m_size);
 	std::vector<int> optimal(n_size * m_size);
 
 	size_t it = 0;

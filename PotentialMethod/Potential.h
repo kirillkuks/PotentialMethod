@@ -39,7 +39,9 @@ private:
 	bool is_production_in_cycle(std::vector<size_t> const&, size_t) const;
 	bool is_consumption_in_cycle(std::vector<size_t> const&, size_t) const;
 
-	std::vector<int> get_plan();
+	std::vector<int> get_plan() const;
+	
+	void take_away_fic(size_t&, size_t&) const;
 
 	std::vector<size_t> cycle;   // цикл пересчёта
 	std::vector<int> production_points;   // количество груза в пунктах хранения
