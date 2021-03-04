@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include "Linear.h"
 
 class Matrix {
 private:
@@ -8,6 +9,7 @@ public:
 	Matrix();
 	Matrix(size_t, size_t);
 	Matrix(Matrix const&);
+	Matrix(LinearProgramming::Matrix&);
 
 	static Matrix create_matrix(size_t, size_t);
 

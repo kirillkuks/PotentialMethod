@@ -140,16 +140,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ClosedType.cpp" />
+    <ClCompile Include="Conditions.cpp" />
+    <ClCompile Include="Converter.cpp" />
+    <ClCompile Include="Linear.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Potential.cpp" />
+    <ClCompile Include="SeidelMethod.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClosedType.h" />
+    <ClInclude Include="Conditions.h" />
+    <ClInclude Include="Convertor.h" />
+    <ClInclude Include="Linear.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Potential.h" />
+    <ClInclude Include="SeidelMethod.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

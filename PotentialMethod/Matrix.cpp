@@ -19,7 +19,15 @@ Matrix::Matrix(size_t n, size_t m = 0) : n{ n }, m{ m == 0 ? n : m } {
 Matrix::Matrix(Matrix const& other) : Matrix(other.n, other.m) {
 	for (size_t i = 0; i < n; ++i) {
 		for (size_t j = 0; j < m; ++j) {
-			matrix[i][j] = other.matrix[i][j];
+			matrix[i][j] = (int)other.matrix[i][j];
+		}
+	}
+}
+
+Matrix::Matrix(LinearProgramming::Matrix& other) : Matrix(other.get_n(), other.get_m()) {
+	for (size_t i = 0; i < n; ++i) {
+		for (size_t j = 0; j < m; ++j) {
+			matrix[i][j] = (int)other[i][j];
 		}
 	}
 }

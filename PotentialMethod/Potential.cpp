@@ -5,6 +5,7 @@ Potential::Potential(PotentialParams const& pp)
 	consumption_points{ pp.consumption_points },
 	table{ pp.table },
 	fic{ pp.fic } {
+
 	std::cout << "production_points:\n";
 	for (auto elem : production_points) {
 		std::cout << elem << ' ';
@@ -15,6 +16,16 @@ Potential::Potential(PotentialParams const& pp)
 	}
 	std::cout << "\nTable:\n";
 	table.print();
+
+	Convertor convertor(pp);
+	LinearData* ld = convertor.get_data();
+
+	linear = new LinearProgramming::Linear(ld->func, ld->system, ld->sign);
+
+}
+
+LinearProgramming::Linear* Potential::get_linear() const {
+	return linear;
 }
 
 void Potential::take_away_fic(size_t& n_size, size_t& m_size) const {
@@ -109,6 +120,7 @@ bool Potential::is_optimal_plan(size_t& i_, size_t& j_) const {
 	
 	std::vector<bool> defined_prod_points(prod_points), defined_cons_points(cons_points);
 	std::vector<int> u(prod_points), v(cons_points);
+
 	std::queue<std::pair<bool, size_t>> queue;
 
 	defined_prod_points[0] = true;
@@ -171,6 +183,7 @@ bool Potential::is_optimal_plan(std::vector<int> const& u, std::vector<int> cons
 		std::cout << "Delta: " << delta << std::endl;
 		return false;
 	}
+
 
 	return true;
 }
@@ -320,4 +333,6 @@ std::vector<int> Potential::solve() {
 	return get_plan();
 }
 
-Potential::~Potential() {}
+Potential::~Potential() {
+	delete linear;
+}

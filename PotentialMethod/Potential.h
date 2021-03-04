@@ -2,6 +2,10 @@
 #include <vector>
 #include <queue>
 #include "Matrix.h"
+#include "Convertor.h"
+#include "Linear.h"
+#include "Conditions.h"
+
 
 enum Fictitious {
 	FIC_NAN = 0,
@@ -26,6 +30,8 @@ public:
 
 	int objective_function(std::vector<int> const&) const;
 
+	LinearProgramming::Linear* get_linear() const;
+
 	~Potential();
 private:
 	bool is_optimal_plan(size_t&, size_t&) const;   // проверка оптимальности точки
@@ -49,4 +55,7 @@ private:
 	Matrix const table;   // таблица стоимости перевозок
 	Matrix plan;   // план перевозок
 	Fictitious fic;
+
+	LinearProgramming::Linear* linear;
+
 };
